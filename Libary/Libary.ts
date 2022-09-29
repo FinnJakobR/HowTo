@@ -1,5 +1,4 @@
 import fs from "fs";
-import { savePromptsInFile } from "../DataStructures/Dictonary";
 
 export async function sleep (ms: number): Promise<void>{
   await new Promise<void>((resolve, reject) => {
@@ -99,30 +98,30 @@ Array.prototype.removeAtIndex = function (index) {
 }
 
 //so the program will not close instantly
-process.stdin.resume();
+//process.stdin.resume();
 
 //do something when app is closing
 
-process.on("exit",async ()=>{
-  await savePromptsInFile();
-});
+//process.on("exit",async ()=>{
+  //await savePromptsInFile();
+//});
 
 //catches ctrl+c event
 
-process.on("SIGINT",async ()=>{
-    await savePromptsInFile();
-});
+//process.on("SIGINT",async ()=>{
+  //  await savePromptsInFile();
+//});
 
 // catches "kill pid" (for example: nodemon restart)
 
-process.on('SIGUSR1', async ()=>{
-    await savePromptsInFile();
-});
-process.on('SIGUSR2', async ()=>{
-    await savePromptsInFile();
-});
+//process.on('SIGUSR1', async ()=>{
+    //await savePromptsInFile();
+//});
+//process.on('SIGUSR2', async ()=>{
+    //await savePromptsInFile();
+//});
 
 //catches uncaught exceptions
-process.on('uncaughtException', async ()=>{
-    await savePromptsInFile();
-});
+//process.on('uncaughtException', async ()=>{
+   // await savePromptsInFile();
+//});

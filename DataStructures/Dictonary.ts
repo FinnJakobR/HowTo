@@ -1,4 +1,5 @@
 import { ReadPromptFile, saveInFile } from "../FileOperations/FileOP";
+import { GeneralSettings } from "../Settings/Settings";
 
 
 var Dictonary: {
@@ -8,7 +9,7 @@ var Dictonary: {
 
 
 async function ReadPrompsTXT(): Promise<string>{
-    const Promps: string = await ReadPromptFile("./Promps.txt");
+    const Promps: string = await ReadPromptFile(GeneralSettings.path+"/Promps.txt");
 
     return Promps;
 }
@@ -41,3 +42,6 @@ export function SaveInDict(prompt: string, generatedPrompt: string): void{
     const GeneratedPromp = Dictonary[prompt];
     return GeneratedPromp;
  }
+
+
+ saveFilePromps();

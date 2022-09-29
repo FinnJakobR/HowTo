@@ -7,10 +7,14 @@ class Queue<T> {
     public constructor(){
       this.size = 0;
       this.items = [];
+      console.log("INIT NEW QUEUE");
     }
 
     public enqueue(item:QueueItem): void {
         this.items.push(item);
+        console.log("ENQUEUE: ");
+        console.log(this.items.length);
+        console.log(item);
         this.size++;
     }
 
@@ -22,7 +26,6 @@ class Queue<T> {
     }
 
     public dequeue(): QueueItem {
-
         var element: QueueItem; 
 
        if(this.isEmpty()) throw new Error("Could not dequeue... Queue is Empty");
@@ -30,7 +33,8 @@ class Queue<T> {
        else {
 
         element = this.items[0];
-        this.items.removeAtIndex(0);
+        this.items.splice(0,1);
+        console.log("DEQUEUE: " + this.items.length);
 
         return element;
        }
@@ -70,7 +74,7 @@ export function CreateQueues(): void {
     CreateVideoQueue();
 }
 
-export function isEmpty(): boolean{
+ function isEmpty(): boolean{
    return API_QUEUE.isEmpty();
 }
 
@@ -82,6 +86,7 @@ export function DequeueAIQueue(): QueueItem {
 
 export function EnqueueApiQueue(element: QueueItem): void {
  API_QUEUE.enqueue(element);
+
 }
 
 export function DequeueApiQueue(): QueueItem {

@@ -3,15 +3,17 @@
     "version": "1.0.0",
     "main": "MainServer.js",
     "scripts": {
-        "start": "node ./Servers/MainServer.js && node ./Servers/StreamServer.js",
-        "test": "node ./UnixTests/Debug.js"
+        "start": "node ./Servers/MainServer.js & node ./Servers/StreamServer.js & node ./Servers/DataBaseServer.js"
     },
     "author": "Finn Reinhardt",
     "license": "ISC",
     "dependencies": {
         "axios": "^0.21.4",
+        "axois": "^0.0.1-security",
         "base-64": "^1.0.0",
+        "body-parser": "^1.20.0",
         "child_process": "^1.0.2",
+        "cors": "^2.8.5",
         "express": "^4.18.1",
         "fastest-levenshtein": "^1.0.16",
         "ffmpeg-static": "^5.1.0",

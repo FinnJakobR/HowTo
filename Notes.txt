@@ -1,0 +1,51 @@
+3 Queues: OpenAi Queue, Api Queue, VideoDownloadQueue
+
+Wurde noch nicht gesendet === Senden und dann in File schreiben 
+
+Senden Easy aber schreiben schwierig --> besonders mit Disconunity 
+
+Disconunity immer wenn alle Videos aus dem Ordner fertig ist 
+
+Errors: 
+   1.Promps TXT nicht gefunden Path wahrscheinlich falsch beim Starten
+
+
+        const Api = new Worker("../Workers/ApiWorker.js");
+
+        Api.on("message",(message)=>{
+
+            console.log("MESSAGE");
+
+            SocketServer.to(message._id).emit(SocketServerSettings.SendTimeStampsCommand,{question: arg.value, TimeStamp: message.TimeStamp})
+            
+            const Download = new Worker("../Workers/DownloadWorker.js");
+
+            Download.on("message",(message)=>{
+                
+                if(message.detail == "First Segments are loaded" && arg.isFirstVideo){
+                    SocketServer.to(message._id).emit(SocketServerSettings.StartClientPlayerCommand);
+                }
+
+                if(message.detail == "User is disconnected"){
+                   
+                    DeleteUserDir(message._id);
+
+                    console.log("User " + message._id + " is Discconected!");
+
+                    return;
+                }
+
+                if(message.detail == "DownLoadingConverting Finish") {
+                    
+                    const AI = new Worker("../Workers/AiWorker.js");
+
+                    AI.on("message",(message)=>{
+                        SocketServer.to(message._id).emit(SocketServerSettings.CheckQuestCommand, {Question: message.newQuestion, BeforeQuestion: arg.value});
+                        return;
+                    });
+                };
+
+            });
+        });
+        
+    });

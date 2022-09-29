@@ -1,8 +1,8 @@
 import { Configuration, OpenAIApi} from 'openai';
-import { GetGeneratedPrompt, SaveInDict } from '../DataStructures/Dictonary';
 import { sleep } from '../Libary/Libary';
 import { OpenAiSettings } from '../Settings/Settings';
 import {distance} from 'fastest-levenshtein';
+import { GetPromptApi, SavePromptApi } from '../Api/DataApi';
 
 const OpenAiconfiguration = new Configuration({
     apiKey: OpenAiSettings.apikey
@@ -16,7 +16,9 @@ export async function GenerateNewWord (prompt: string): Promise<string | null>{
    
     //Checken ob diser Prompt schon mal verwendet wurde 
 
-    if(GetGeneratedPrompt(prompt)) return GetGeneratedPrompt(prompt);
+    const GeneratedPrompt = await GetPromptApi(prompt);
+
+    if(GeneratedPrompt) return GeneratedPrompt;
     
     //Generate mit der OpenAi Api mehrere neue Promps
 
@@ -48,7 +50,7 @@ export async function GenerateNewWord (prompt: string): Promise<string | null>{
 
     const UsePromptIndex = await  CalculateMaxDistance(prompt ,PreprocessedPromps);
 
-    SaveInDict(prompt, PreprocessedPromps[UsePromptIndex]);
+    await SavePromptApi(prompt, PreprocessedPromps[UsePromptIndex]);
 
     return PreprocessedPromps[UsePromptIndex];
 

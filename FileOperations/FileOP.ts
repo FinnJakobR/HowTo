@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import {Readable} from "stream";
-import { AddFileStream, GetStream } from "../DataStructures/UserDictonary";
-import { DictonarySettings, GeneralSettings, SocketServerSettings } from "../Settings/Settings";
+import { AddFileStreamApi, GetFileStreamApi } from "../Api/DataApi";
+import { DictonarySettings, GeneralSettings, SocketServerSettings, StreamServerStettings } from "../Settings/Settings";
 
 /**
   * Read The File of the Prompt 
@@ -31,59 +31,48 @@ export async function RemoveFile(path: string): Promise<void> {
 
 export async function DeleteUserDir(_id:string): Promise<void> {
   
-    await fs.rmdir(`../${GeneralSettings.VideoDirName}/${_id}`,{recursive: true});
+    await fs.rmdir(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}`,{recursive: true});
 
   return;
 }
 
 export async function CreateUserDir(_id:string): Promise<void>{
-    await fs.mkdir(`../${GeneralSettings.VideoDirName}/${_id}`);
+    await fs.mkdir(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}`);
 
     return
 }
 
 
 export async function CreateVideoOrdner(video:number, _id:string): Promise<void>{
-    await fs.mkdir(`../${GeneralSettings.VideoDirName}/${_id}/${video}`);
+    await fs.mkdir(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/${video}`);
 
     return;
 }
 
 export async function CreateStreamingFile (_id:string): Promise<void> {
 
-    const FileData = 
-    `
-    #EXTM3U
-    #EXT-X-PLAYLIST-TYPE:EVENT
-    #EXT-X-VERSION:7
-    #EXT-X-MEDIA-SEQUENCE:0
-    #EXT-X-TARGETDURATION:1
-    #EXT-X-DISCONTINUITY-SEQUENCE:0
-    #EXTINF:1.00000
-    ${GeneralSettings.HostName}:${SocketServerSettings.port}/${_id}/0/fileSequence0.ts
-    `;
+const FileData = `#EXTM3U
+#EXT-X-PLAYLIST-TYPE:EVENT
+#EXT-X-VERSION:7
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-TARGETDURATION:1
+#EXT-X-DISCONTINUITY-SEQUENCE:0
+#EXTINF:1.00000
+${GeneralSettings.HostName}:${StreamServerStettings.port}/${_id}/0/0.ts
+`;
 
-    await fs.writeFile(`../${GeneralSettings.VideoDirName}/${_id}/index.m3u8`, FileData);
+    await fs.writeFile(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/index.m3u8`, FileData);
 
-    AddFileStream(_id);
+    await AddFileStreamApi(_id);
 
     return;
 }
 
 export async function WriteInStreamFile(data: string, _id:string): Promise<void>{
-    
-    await new Promise<void>((resolve, reject) => {
-        const stream = GetStream(_id);
-        const ReadStream = Readable.from(`${data}\n`);
-        ReadStream.pipe(stream);
-        
-        ReadStream.on("close",()=>{
-            resolve();
-        });
 
-        ReadStream.on("error",()=>{
-            reject("COULD NOT IN WRITE IN STREAM FILE");
-        });
-        
-    });
+    console.log(data);
+    
+    await fs.writeFile(`${GeneralSettings.VideoDirName}/${_id}/index.m3u8`, data, {flag: "a"});
+
+    return
 }

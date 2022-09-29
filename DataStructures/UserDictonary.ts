@@ -16,6 +16,8 @@ export function ChangeTimeStamp(_id: string, newTimeStamp: number): void {
 
 export function GetIndexLength(_id: string, index: number): number {
 
+  console.log(USERS)
+
   return USERS[_id]!.VideoIndexLengths[index];
 }
 
@@ -71,7 +73,7 @@ export function GETUserData(_id:string): any{
 }
 
 export function AddFileStream(_id: string): void {
-  USERS[_id]!.StreamFileStream = fs.createWriteStream(`../${GeneralSettings.VideoDirName}/${_id}/index.m3u8`, { flags: 'a' });
+  USERS[_id]!.StreamFileStream = fs.createWriteStream(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/index.m3u8`, { flags: 'a' });
 }
 
 export function GetStream(_id: string): fs.WriteStream {

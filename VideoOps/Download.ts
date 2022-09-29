@@ -5,7 +5,7 @@ import ffmpeg from "ffmpeg-static";
 import {Worker, isMainThread, parentPort} from "worker_threads";
 import { GeneralSettings } from "../Settings/Settings";
 import { RemoveFile } from "../FileOperations/FileOP";
-import { IsUserConnected } from "../DataStructures/UserDictonary";
+import { IsUserConnectedApi } from "../Api/DataApi";
 
 export async function DownloadAndConvertVideo(url:string, _id: string, videoNum: number) {
 
@@ -76,8 +76,8 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
           "-hls_list_size", "0",
           "-level" , "6.0",
           "-crf","28",
-          "-hls_segment_filename", `../${GeneralSettings.VideoDirName}/${_id}/${videoNum}/%d.ts`, //TODO: CHANGE
-          `../${GeneralSettings.VideoDirName}/${_id}/buffer.m3u8` //TODO: CHANGE 
+          "-hls_segment_filename", `${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/${videoNum}/%d.ts`, //TODO: CHANGE
+          `${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/buffer.m3u8` //TODO: CHANGE 
       ],{
           windowsHide: true,
           stdio: [
@@ -91,19 +91,21 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
         
         ConvertProcess.stdio[3]?.pipe(HLSProcess.stdio[3]);
       
-        HLSProcess.stdio[4]?.on("data",()=>{
+        HLSProcess.stdio[4]?.on("data",async ()=>{
 
           if(isFirstTsFile){
             
             isFirstTsFile = false;
             
             setTimeout(() => {
-              parentPort?.postMessage({_id: _id, detail: "First Segments are loaded"});
+              process.send!({_id: _id, detail: "First Segments are loaded"});
             }, 1000);
 
           }
+
+          const isConnected = await IsUserConnectedApi(_id);
       
-          if(!IsUserConnected(_id) && !isMainThread) {
+          if(!isConnected) {
             try {
               HLSProcess.stdio[3].destroy();
               HLSProcess.kill();
@@ -117,16 +119,19 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
         });
         
         HLSProcess.on("close",async ()=>{
+
+          const isConnected = await IsUserConnectedApi(_id);
           
-          if(!isMainThread && IsUserConnected(_id)){
+          if(isConnected){
             console.log("end");
-           parentPort?.postMessage({_id: _id, detail: "DownLoadingConverting Finish"});
+            process.send!({_id: _id, detail: "DownLoadingConverting Finish"});
           
           }else{
             console.log("KILLED PROCESS");
-            parentPort?.postMessage({_id: _id, detail: "User is disconnected"});
+           
+             process.send!({_id: _id, detail: "User is disconnected"});
           }
-           await RemoveFile(`../${GeneralSettings.VideoDirName}/${_id}/buffer.m3u8`);
+           await RemoveFile(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/buffer.m3u8`);
            resolve();
         });
     })

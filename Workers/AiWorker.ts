@@ -1,14 +1,15 @@
 import {Worker, isMainThread, parentPort} from "worker_threads";
 import { GenerateNewWord } from "../AI/OpenAi";
-import { DequeueAIQueue, EnqueueApiQueue } from "../DataStructures/Queue";
-import { IsUserConnected } from "../DataStructures/UserDictonary";
+import { DequeueOpApi, EnqueueOpApi, IsUserConnectedApi } from "../Api/DataApi";
+
 
 async function CreateNewQuestion() : Promise<any> {
    
-    const Data = DequeueAIQueue();
+    const Data = await DequeueOpApi("ai");
+    const isConnected = await IsUserConnectedApi(Data._ID);
 
-    if(!IsUserConnected(Data._ID) && !isMainThread) {
-       parentPort?.postMessage({_id: Data._ID, detail: "User is disconnected"});
+    if(!isConnected) {
+       process.send!({_id: Data._ID, detail: "User is disconnected"});
        return;
     };
 
@@ -16,12 +17,9 @@ async function CreateNewQuestion() : Promise<any> {
 
     const API_Queue_Element: QueueItem = {_ID: Data._ID, URL: null, QUESTION: newQuestion!};
 
-    if(!isMainThread){
-        parentPort?.postMessage({_ID: Data._ID, newQuestion: newQuestion, detail: "AI_WORKER_ENDED"});
-    }
+    process.send!({_ID: Data._ID, newQuestion: newQuestion, detail: "AI_WORKER_ENDED"});
 
-    EnqueueApiQueue(API_Queue_Element);
-
+    await EnqueueOpApi("api",API_Queue_Element);
 
     return
 }
