@@ -112,18 +112,21 @@ SocketServer.on("connection",async (socket)=>{
 
     if(!isMainThread) throw new Error("MainServer File have to on MainThread!");
 
-});
 
-SocketServer.on("disconnection",async (socket)=>{
-    
-   await RemoveUserApi(socket.id);
+    socket.on("disconnect",async ()=>{
 
-   console.log("DISCONNECT");
+        await RemoveUserApi(socket.id);
+     
+        console.log("DISCONNECT");
+     
+        setTimeout(async () => {
+         await DeleteUserDir(socket.id);
+         
+        }, 1000);
+     
+     });
 
-   setTimeout(async () => {
-    await DeleteUserDir(socket.id);
-    
-   }, 1000);
+     
 
 });
 
