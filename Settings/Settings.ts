@@ -3,7 +3,7 @@
 
 
 export const DataBaseServerSettings = {
- port: 7000,
+ port: 3000,
  hostname: "http://localhost"
 }
 
