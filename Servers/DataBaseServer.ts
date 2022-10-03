@@ -1,17 +1,29 @@
 import bodyParser from "body-parser";
 import  express  from "express";
 import { GetGeneratedPrompt, SaveInDict } from "../DataStructures/Dictonary";
-import { DequeueAIQueue, DequeueApiQueue, DequeueVideoQueue, EnqueueApiQueue, EnqueueInQueue, EnqueueVideoQueue } from "../DataStructures/Queue";
+import { DeleteUserFromQueue, DequeueAIQueue, DequeueApiQueue, DequeueVideoQueue, EnqueueApiQueue, EnqueueInQueue, EnqueueVideoQueue } from "../DataStructures/Queue";
 import { AddFileStream, AddVideoToUser, ADD_User, ChangeTimeStamp, GetIndexLength, GetStream, GETUserData, isAllreadyRequested, IsUserConnected, RemoveUser } from "../DataStructures/UserDictonary";
 import { DataBaseServerSettings } from "../Settings/Settings";
 
 // 1. Queue
+
 
 const PORT = DataBaseServerSettings.port;
 
 const DataBaseServer = express();
 
 DataBaseServer.use(bodyParser.json());
+
+
+DataBaseServer.get("/QUEUE/:ID/DELETE_USER", (req,res)=>{
+  const _id = req.params.ID;
+
+  DeleteUserFromQueue(_id);
+
+  return res.status(200).send({CODE: 200, MESSAGE: "Delte from Queue Operation sucessfull!", DATA: null});
+
+
+});
 
 
 
@@ -142,7 +154,8 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   const Body = req.body;
   const _id = req.params.USER_ID;
 
-  console.log(operation);
+
+  console.log("Operation: " + operation);
 
   if(operation != "changetimestamp" && operation != "getindexlength" && operation != "isallreadyrequested" && operation != "adduser" && operation != "addvideotouser" && operation != "isuserconnected" && operation != "removeuser" && operation != "getuserdata" && operation != "addfilestream" && operation != "getstream"){
     res.send({CODE: 400, MESSAGE: "UserDatabase operation not found!"});
@@ -150,7 +163,13 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   }
 
   if(operation == "changetimestamp"){
-    ChangeTimeStamp(_id, Body.newTimeStamp);
+
+    if(!IsUserConnected(_id)) {
+    return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+    }
+
+    console.log("SENDED TIMESTAMP: " + Body.newTimeStamp);
+    ChangeTimeStamp(_id, Body.newTimeStamp - 1000); //-1000 because of 0MS;
 
     res.send({CODE: 200, MESSAGE: "Operation Sucess"});
 
@@ -158,6 +177,11 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   }
 
   if(operation == "getindexlength"){
+
+    if(!IsUserConnected(_id)) {
+      return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+      }
+
     const Data = GetIndexLength(_id, Body.index);
     res.send({CODE: 200, MESSAGE: "Operation Sucess", DATA: Data});
     return;
@@ -173,6 +197,11 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   }
 
   if(operation == "addvideotouser"){
+
+    if(!IsUserConnected(_id)) {
+      return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+      }
+
     AddVideoToUser(_id);
     res.send({CODE: 200, MESSAGE: "Operation Success"});
 
@@ -180,6 +209,11 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   }
 
   if(operation == "isallreadyrequested"){
+
+    if(!IsUserConnected(_id)) {
+      return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+      }
+
     const isReq = isAllreadyRequested(_id, Body.FileName);
     
     res.send({CODE: 200, MESSAGE: "Operation Success", ISREQ: isReq});
@@ -188,12 +222,18 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   }
 
   if(operation == "isuserconnected"){
+
     const isUserCon = IsUserConnected(_id);
     res.send({CODE: 200, MESSAGE: "Operation Success", ISUSERCON: isUserCon});
     return;
   }
 
   if(operation == "removeuser"){
+
+    if(!IsUserConnected(_id)) {
+      return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+      }
+
     RemoveUser(_id);
     
     res.send({CODE: 200, MESSAGE: "Operation Success"});
@@ -202,6 +242,11 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   }
 
   if(operation == "getuserdata"){
+    
+    if(!IsUserConnected(_id)) {
+      return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+      }
+
     const Data = GETUserData(_id);
 
     res.send({CODE: 200, MESSAGE: "operation Success", DATA: Data});
@@ -209,6 +254,10 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
   }
 
   if(operation == "addfilestream"){
+
+    if(!IsUserConnected(_id)) {
+      return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+      }
     
     AddFileStream(_id);
 
@@ -218,6 +267,11 @@ DataBaseServer.post("/USERDATABASE/:USER_ID/:OPERATION",(req,res)=>{
 
 
   if(operation == "getstream"){
+
+    if(!IsUserConnected(_id)) {
+      return  res.send({CODE: 400, MESSAGE: "User is Disconnected"});
+      }
+      
       const stream = GetStream(_id);
       res.send({CODE: 200, MESSAGE: "operation Success", STREAM: stream}); 
 

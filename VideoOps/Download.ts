@@ -44,6 +44,7 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
           "-f", "avi",
           "pipe:3"
         ],{
+          detached: true,
           windowsHide: true,
           stdio: [
             /* Standard: stdin, stdout, stderr */
@@ -79,6 +80,7 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
           "-hls_segment_filename", `${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/${videoNum}/%d.ts`, //TODO: CHANGE
           `${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/buffer.m3u8` //TODO: CHANGE 
       ],{
+        detached: true,
           windowsHide: true,
           stdio: [
             /* Standard: stdin, stdout, stderr */
@@ -107,9 +109,13 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
       
           if(!isConnected) {
             try {
-              HLSProcess.stdio[3].destroy();
-              HLSProcess.kill();
-              ConvertProcess.kill();
+              audio.destroy();
+              video.destroy();
+              HLSProcess.stdio[3]?.destroy();
+              HLSProcess.stdio[4]?.destroy();
+              
+              process.kill(-ConvertProcess.pid);
+              process.kill(-HLSProcess.pid);
             } catch (error) {
               console.log("KILLED CONVERT");
             }

@@ -5,7 +5,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { CreateStreamingFile, CreateUserDir, DeleteUserDir } from "../FileOperations/FileOP";
 import {Worker, isMainThread, parentPort} from "worker_threads";
-import { AddUserApi, EnqueueOpApi, RemoveUserApi } from "../Api/DataApi";
+import { AddUserApi, RemoveUserApi } from "../Api/DataApi";
 import { exec, fork, spawn } from "child_process";
 
 
@@ -36,9 +36,7 @@ SocketServer.on("connection",async (socket)=>{
 
         const QueueItem: QueueItem = {_ID: socket.id, URL: null, QUESTION: arg.value};
 
-        await EnqueueOpApi("api",QueueItem);
-
-         const API = fork(GeneralSettings.path+"/Workers/ApiWorker.js");
+         const API = fork(GeneralSettings.path+"/Workers/ApiWorker.js", [JSON.stringify(QueueItem)]);
 
          API.on("message",async (message)=>{
 
@@ -46,21 +44,17 @@ SocketServer.on("connection",async (socket)=>{
 
             const Message = JSON.parse(stringMessage);
 
-            if(Message.MESSAGE == "USER IS DISCONNECTED!"){
-                await DeleteUserDir(Message.DATA.ID);
-
-                return;
-             }
+            if(Message.MESSAGE == "USER IS DISCONNECTED!") return;
 
              const VideoItem: QueueItem = {
-              _ID: Message.DATA.ID!,
+              _ID: socket.id,
               URL: Message.DATA.URL!,
               QUESTION: arg.value
              }
 
              SocketServer.to(Message.UUID).emit(SocketServerSettings.SendTimeStampsCommand, {question: arg.value, TimeStamp: Message.DATA.DURATION})
 
-             const VideoProcess = fork(GeneralSettings.path+"/Workers/DownloadWorker.js");
+             const VideoProcess = fork(GeneralSettings.path+"/Workers/DownloadWorker.js", [JSON.stringify(VideoItem)]);
 
              VideoProcess.on("message",async (message)=>{
                const StringMessage = JSON.stringify(message);
@@ -72,9 +66,7 @@ SocketServer.on("connection",async (socket)=>{
 
             if(Message.detail == "User is disconnected"){
                    
-                 DeleteUserDir(Message._id);
-
-                console.log("User " + Message._id + " is Discconected!");
+                console.log("User " + Message._id + " is Disconected!");
 
                 return;
             }
@@ -87,10 +79,8 @@ SocketServer.on("connection",async (socket)=>{
                     QUESTION: arg.value
 
                 }
-
-                await EnqueueOpApi("ai", AiItem);
                     
-                const AI = fork(GeneralSettings.path+"/Workers/AiWorker.js");
+                const AI = fork(GeneralSettings.path+"/Workers/AiWorker.js", [JSON.stringify(AiItem)]);
 
                 AI.on("message",(message)=>{
                     const StringMessage = JSON.stringify(message);

@@ -7,7 +7,7 @@ const ServerHostName = DataBaseServerSettings.hostname;
 const Main_Url = ServerHostName + ":" + ServerPort + "/";
 
 
-export async function DequeueOpApi(type: string) :Promise<QueueItem>{
+ async function DequeueOpApi(type: string) :Promise<QueueItem>{
 
     const res = await axios.get(Main_Url + "QUEUE/" + type.toUpperCase() + "/DEQUEUE");
     
@@ -15,7 +15,7 @@ export async function DequeueOpApi(type: string) :Promise<QueueItem>{
 
 }
 
-export async function EnqueueOpApi(type:string, Data: QueueItem): Promise<void> {
+ async function EnqueueOpApi(type:string, Data: QueueItem): Promise<void> {
 
      const data = await axios.post(Main_Url + "QUEUE/" + type.toUpperCase() + "/ENQUEUE",Data);
 
@@ -46,12 +46,20 @@ export async function GetPromptApi(prompt: string) {
     return res.data.prompt;
 }
 
+
+ async function DeleteUserFromQueueApi(_id: string) {
+    
+    const res = await axios.get(Main_Url + "QUEUE/" + _id + "/DELETE_USER");
+
+    return;
+}
+
 export async function ChangeTimeStampApi(_id:string, newTimeStamp: number) {
     const Body = {
         newTimeStamp: newTimeStamp
     }
 
-    await axios.post(Main_Url + "USERDATABASE/" + _id + "/newTimeStamp", Body);
+    await axios.post(Main_Url + "USERDATABASE/" + _id + "/changetimestamp", Body);
 
     return;
 }
@@ -62,6 +70,7 @@ export async function GetIndexLengthApi(_id:string, index: number) {
  }
 
  const res = await axios.post(Main_Url + "USERDATABASE/" + _id + "/GETINDEXLENGTH", Body);
+
  return res.data!.DATA;
 }
 
@@ -80,7 +89,6 @@ export async function addVideoToUserApi(_id:string) {
 
     const res = await axios.post(Main_Url + "USERDATABASE/" + _id + "/AddVideoToUser", Body);
 
-    console.log(res);
     return;
 }
 
@@ -136,8 +144,6 @@ export async function GetFileStreamApi(_id:string) {
     const Body = {};
 
     const res = await axios.post(Main_Url + "USERDATABASE/" + _id + "/getstream", Body);
-
-    console.log(res);
 
     return res.data.STREAM;
 

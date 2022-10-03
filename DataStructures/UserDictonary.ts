@@ -9,14 +9,13 @@ export function ChangeTimeStamp(_id: string, newTimeStamp: number): void {
   
     USERS[_id]!.NextTimeStampsMs+=newTimeStamp;
 
-    USERS[_id]!.VideoIndexLengths[ USERS[_id]!.videos] = newTimeStamp;
+    USERS[_id]!.VideoIndexLengths[USERS[_id]!.videos] = newTimeStamp;
 
   return;
 }
 
 export function GetIndexLength(_id: string, index: number): number {
 
-  console.log(USERS)
 
   return USERS[_id]!.VideoIndexLengths[index];
 }

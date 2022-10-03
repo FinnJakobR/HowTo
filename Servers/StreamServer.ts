@@ -26,10 +26,15 @@ StreamServer.get(StreamServerStettings.url, async (req,res)=>{
 
     const FileNumber = FileName.match(/\d+/g);
 
-    const IndexLength = await GetIndexLengthApi(_id, Number(videos));
+    console.log("FileNumber: " + FileNumber![0]);
+
+
+    const IndexLength = await GetIndexLengthApi(_id, Number(videos)) / 1000; // Conert back to seconds !
+
+    console.log("IndexLength of Video " + Number(videos)  + " " + IndexLength)
     
     if(Number(FileNumber![0]) == IndexLength) {
-        await WriteInStreamFile(`#EXT-X-DISCONTINUITY\n#EXTINF:1.000000\n${GeneralSettings.HostName}/${_id}/${videos+1}/0.ts\n`, _id);
+        await WriteInStreamFile(`#EXT-X-DISCONTINUITY\n#EXTINF:1.000000\n${GeneralSettings.HostName}:${StreamServerStettings.port}/${_id}/${Number(videos)+1}/0.ts\n`, _id);
 
         return res.status(200).sendFile(path.join(`${__dirname}`, `../${GeneralSettings.VideoDirName}`, `/${_id}`, `/${videos}` , `/${FileName}`));
     }

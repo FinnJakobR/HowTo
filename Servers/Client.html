@@ -128,7 +128,7 @@
                 changePointer();
                 document.getElementsByTagName("video")[0].style.display = "none";
 
-                const Question = document.getElementsByTagName("input")[0].value;
+                const Question = "How to " + document.getElementsByTagName("input")[0].value;
 
                 UserData[Question] = {
                     TimeStamp: 0

@@ -1,11 +1,11 @@
 import {Worker, isMainThread, parentPort} from "worker_threads";
 import { GenerateNewWord } from "../AI/OpenAi";
-import { DequeueOpApi, EnqueueOpApi, IsUserConnectedApi } from "../Api/DataApi";
+import {IsUserConnectedApi } from "../Api/DataApi";
 
 
 async function CreateNewQuestion() : Promise<any> {
    
-    const Data = await DequeueOpApi("ai");
+    const Data = JSON.parse(process.argv[2]);
     const isConnected = await IsUserConnectedApi(Data._ID);
 
     if(!isConnected) {
@@ -19,7 +19,6 @@ async function CreateNewQuestion() : Promise<any> {
 
     process.send!({_ID: Data._ID, newQuestion: newQuestion, detail: "AI_WORKER_ENDED"});
 
-    await EnqueueOpApi("api",API_Queue_Element);
 
     return
 }

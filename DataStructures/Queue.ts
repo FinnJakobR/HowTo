@@ -39,6 +39,17 @@ class Queue<T> {
         return element;
        }
     }
+    
+//TODO: Add to API
+    public DeleteUserFromQueue(_id:string){
+      for (let index = 0; index < this.items.length; index++) {
+       if(this.items[index]._ID == _id){
+        this.items.splice(index, 1);
+       }
+      }
+
+      return;
+    }
 
     public print(): void {
         for (let index = 0; index < this.items.length; index++) {
@@ -86,6 +97,16 @@ export function DequeueAIQueue(): QueueItem {
 
 export function EnqueueApiQueue(element: QueueItem): void {
  API_QUEUE.enqueue(element);
+
+}
+
+export function DeleteUserFromQueue(_id: string): void {
+  
+  API_QUEUE.DeleteUserFromQueue(_id);
+  AI_QUEUE.DeleteUserFromQueue(_id);
+  VIDEO_QUEUE.DeleteUserFromQueue(_id);
+
+  return;
 
 }
 

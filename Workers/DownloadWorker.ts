@@ -1,10 +1,11 @@
 import { CreateVideoOrdner } from "../FileOperations/FileOP";
 import {DownloadAndConvertVideo} from "../VideoOps/Download";
 import {Worker, isMainThread, parentPort} from "worker_threads";
-import { addVideoToUserApi, DequeueOpApi, GetUserDataApi, IsUserConnectedApi } from "../Api/DataApi";
+import { addVideoToUserApi,GetUserDataApi, IsUserConnectedApi } from "../Api/DataApi";
 
 async function Download_ConvertVideo(): Promise<void> {
-    const QueueData: NullSave<any> = await DequeueOpApi("video");
+    const QueueData: NullSave<any> = JSON.parse(process.argv[2]);
+    
     const UserData: NullSave<any> = await GetUserDataApi(QueueData._ID);
 
     console.log(UserData);

@@ -1,10 +1,15 @@
 import {Worker, isMainThread, parentPort} from "worker_threads";
 import { SearchVideo } from "../Api/Api";
-import { ChangeTimeStampApi, DequeueOpApi, EnqueueOpApi, GetUserDataApi, IsUserConnectedApi } from "../Api/DataApi";
+import { ChangeTimeStampApi, GetUserDataApi, IsUserConnectedApi } from "../Api/DataApi";
 
 async function Search(): Promise<void> {
-    const Data = await DequeueOpApi("api");
+
+
+    const Data = JSON.parse(process.argv[2]);
     const UserData =  await GetUserDataApi(Data._ID);
+
+    console.log(UserData);
+
 
     if(Data._ID != UserData._id) throw new Error("Queue id is not equal to UserDataBase id");
 
@@ -17,9 +22,10 @@ async function Search(): Promise<void> {
 
     const SearchResponse = await SearchVideo(Data.QUESTION);
 
-    const VIDEO_Queue_Element: QueueItem = {_ID: Data._ID, URL: SearchResponse.URL, QUESTION: Data.QUESTION};
+    console.log("RES: " + SearchResponse);
  
-    await EnqueueOpApi("video",VIDEO_Queue_Element);
+    console.log("DURATION: " + SearchResponse.DURATION);
+    console.log("ID: " + UserData._id);
 
     await ChangeTimeStampApi(UserData._id, SearchResponse.DURATION);
 

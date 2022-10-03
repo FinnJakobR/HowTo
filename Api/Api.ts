@@ -10,6 +10,9 @@ const Options: ytsr.Options = {
 
 export async function SearchVideo(request: string): Promise<API_RESPONSE> {
 
+console.log("SearchVideo");
+    
+
 const Filter: string = await CreateFilters(request);
 
 const response: ytsr.Result = await ytsr(Filter, Options);

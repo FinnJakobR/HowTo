@@ -24,7 +24,7 @@ export const GeneralSettings = {
 
 
 export const OpenAiSettings = {
-    apikey : "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" ,
+    apikey : "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" ,
     model: "davinci:ft-universit-t-der-k-nste-berlin-2022-02-12-18-36-05",
     NumPerRun: 3,
     delayMs: 1000,

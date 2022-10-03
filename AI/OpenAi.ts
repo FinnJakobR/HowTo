@@ -48,9 +48,16 @@ export async function GenerateNewWord (prompt: string): Promise<string | null>{
 
     const PreprocessedPromps = await PreprocessingData(GeneratedPromps);
 
-    const UsePromptIndex = await  CalculateMaxDistance(prompt ,PreprocessedPromps);
+    const UsePromptIndex = await CalculateMaxDistance(prompt ,PreprocessedPromps);
 
     await SavePromptApi(prompt, PreprocessedPromps[UsePromptIndex]);
+
+    if(PreprocessedPromps[UsePromptIndex] === prompt){
+        
+        const ReSearchedPrompt = await GenerateNewWord(prompt);
+
+        return ReSearchedPrompt;
+    }
 
     return PreprocessedPromps[UsePromptIndex];
 

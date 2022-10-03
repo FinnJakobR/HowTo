@@ -31,7 +31,7 @@ export async function RemoveFile(path: string): Promise<void> {
 
 export async function DeleteUserDir(_id:string): Promise<void> {
   
-    await fs.rmdir(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}`,{recursive: true});
+    await fs.rm(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}`,{recursive: true});
 
   return;
 }
