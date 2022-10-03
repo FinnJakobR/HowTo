@@ -11,7 +11,7 @@ npm install
 ```
 
 ```js
-mkdir Videos
+mkdir ./Videos
 ```
 
 ## Using
