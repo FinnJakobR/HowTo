@@ -18,7 +18,7 @@ mkdir ./Videos
 
 
 ```js
-cd <path/to/HomeDirOfHowTo/>
+cd <path/to/HowTo/>
 ```
 
 ```js
