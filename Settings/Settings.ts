@@ -20,6 +20,7 @@ export const GeneralSettings = {
   VideoDirName: "Videos",
   HostName: "http://localhost",
   path: ".",
+  debug: true
 }
 
 

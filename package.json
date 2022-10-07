@@ -3,7 +3,10 @@
     "version": "1.0.0",
     "main": "MainServer.js",
     "scripts": {
-        "start": "node ./Servers/MainServer.js & node ./Servers/StreamServer.js & node ./Servers/DataBaseServer.js"
+        "start": "node ./Servers/MainServer.js & node ./Servers/StreamServer.js & node ./Servers/DataBaseServer.js",
+        "build": "npm install & node ./Libary/",
+        "debug_ai": "node ./UnixTests/TestOpenAi.js & node ./Servers/DataBaseServer.js ",
+        "debug_api": "node ./UnixTests/ApiTest.js"
     },
     "author": "Finn Reinhardt",
     "license": "ISC",

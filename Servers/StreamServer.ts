@@ -4,6 +4,7 @@ import cors from "cors";
 import { GetIndexLengthApi, IsAllreadyRequestedApi } from "../Api/DataApi";
 import { WriteInStreamFile } from "../FileOperations/FileOP";
 import { GeneralSettings, StreamServerStettings } from "../Settings/Settings";
+import { updateProgress } from "../Libary/Logger";
 
 
 const StreamServer = express();
@@ -15,7 +16,7 @@ StreamServer.use(cors());
 StreamServer.get(StreamServerStettings.url, async (req,res)=>{
 
     const _id = req.params.id;
-    const videos = req.params.video;
+    const videos:string = req.params.video;
     const FileName:string = req.params.file;
 
     if(FileName == "index.m3u8") return res.status(200).sendFile(path.join(__dirname, `../${GeneralSettings.VideoDirName}`, `/${_id}`, "/index.m3u8"));
@@ -26,12 +27,9 @@ StreamServer.get(StreamServerStettings.url, async (req,res)=>{
 
     const FileNumber = FileName.match(/\d+/g);
 
-    console.log("FileNumber: " + FileNumber![0]);
-
 
     const IndexLength = await GetIndexLengthApi(_id, Number(videos)) / 1000; // Conert back to seconds !
-
-    console.log("IndexLength of Video " + Number(videos)  + " " + IndexLength)
+    updateProgress(_id, "VideoLength", (IndexLength).toString())
     
     if(Number(FileNumber![0]) == IndexLength) {
         await WriteInStreamFile(`#EXT-X-DISCONTINUITY\n#EXTINF:1.000000\n${GeneralSettings.HostName}:${StreamServerStettings.port}/${_id}/${Number(videos)+1}/0.ts\n`, _id);
@@ -40,6 +38,8 @@ StreamServer.get(StreamServerStettings.url, async (req,res)=>{
     }
 
     await WriteInStreamFile(`#EXTINF:1.000000\n${GeneralSettings.HostName}:${StreamServerStettings.port}/${_id}/${videos}/${Number(FileNumber![0])+1}.ts\n`, _id);
+
+    updateProgress(_id!, "LastDownLoadedVideo", `/${videos}/${Number(FileNumber![0])+1}.ts`)
 
     return res.status(200).sendFile(path.join(`${__dirname}`, `../${GeneralSettings.VideoDirName}`, `/${_id}`, `/${videos}` , `/${FileName}`));
 });

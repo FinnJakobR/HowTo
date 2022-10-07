@@ -1,4 +1,4 @@
-import {getFilters} from "ytsr";
+import {getFilters, Video} from "ytsr";
 import ytsr from "ytsr";
 import { ApiSettings } from "../Settings/Settings";
 
@@ -10,29 +10,40 @@ const Options: ytsr.Options = {
 
 export async function SearchVideo(request: string): Promise<API_RESPONSE> {
 
-console.log("SearchVideo");
+//console.log("SearchVideo");
     
 
 const Filter: string = await CreateFilters(request);
 
 const response: ytsr.Result = await ytsr(Filter, Options);
 
-const DurationInString = response.items[0].type == "video" ? response.items[0].duration : console.log("This Result Item is not a Video");
 
-const DurationinMs: number = ConvertDuration(DurationInString!);
+for (let index = 0; index < response.items.length; index++) {
 
-const VideoUrl = response.items[0].type == "video" ? response.items[0].url : console.log("This Result Item is not a Video")
+    const Videos = response.items[index] as Video;
 
-const ReturnData: API_RESPONSE = {
-  ID: response.items[0].type == "video" ? response.items[0].id : console.log("This Result Item is not a Video"),
-  NAME: response.items[0].type == "video" ? response.items[0].title : console.log("This Result Item is not a Video"),
-  DURATION: DurationinMs,
-  URL: VideoUrl!
+    const SplittedDuration = Videos.duration?.split(":");
+     if(SplittedDuration?.length == 2){
+        const DurationInString = Videos.duration;
 
+        const DurationinMs: number = ConvertDuration(DurationInString!);
+        
+        const VideoUrl = Videos.url;
+        
+        const ReturnData: API_RESPONSE = {
+          ID: Videos.id,
+          NAME: Videos.title,
+          DURATION: DurationinMs,
+          URL: VideoUrl!
+        
+        }
+        
+        return ReturnData;
+     }
+    
 }
 
-return ReturnData;
-
+throw Error("Could not get a Video with a Length smaller than one Hour!");
 }
 
 async function CreateFilters(request: string) {

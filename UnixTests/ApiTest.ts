@@ -9,4 +9,4 @@ async function TestApi(request: string): Promise<any> {
 }
 
 
-TestApi("How to play uno?");
+TestApi("How to play cards with friends!");

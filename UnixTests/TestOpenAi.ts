@@ -1,14 +1,16 @@
 import { GenerateNewWord } from "../AI/OpenAi";
 
 
-const TestPromps = ["How to p"]
 
 
 async function TestOpenAi(prompt: string) {
-    console.log("RUN")
-    const data = await GenerateNewWord(prompt);
 
-    console.log(data);
+    setTimeout(async ()=>{
+        console.log("RUN")
+        const data = await GenerateNewWord(prompt);
+    
+        console.log(data);
+    }, 1500)
 }
 
 for (let index = 0; index < 1; index++) {

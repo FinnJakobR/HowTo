@@ -26,10 +26,15 @@ export async function GenerateNewWord (prompt: string): Promise<string | null>{
 
     var NumOfGeneratedPromps = 0;
 
+    var comp = null;
+
     while (NumOfGeneratedPromps < OpenAiSettings.NumPerRun) {
-      
-        const comp = await OpenAIRequest.createCompletion({model: OpenAiSettings.model, prompt: prompt + "\n"});
-         
+
+        try {
+            comp = await OpenAIRequest.createCompletion({model: OpenAiSettings.model, prompt: prompt + "\n"});   
+        } catch (error) {
+            throw Error("Could not Generate new Question most likely the APikey is not valid!");
+        }  
         await sleep(OpenAiSettings.delayMs);
          
          if(comp){

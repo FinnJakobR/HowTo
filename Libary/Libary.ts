@@ -1,11 +1,19 @@
 import fs from "fs";
 
+
+
 export async function sleep (ms: number): Promise<void>{
   await new Promise<void>((resolve, reject) => {
     setTimeout(() => {
         resolve();
     }, ms);
   })
+}
+
+export function printing(process: NodeJS.Process, text:string, line: number) {
+    process.stdout.cursorTo(0, line);
+
+    process.stdout.write(text.toString());
 }
 
 declare global {

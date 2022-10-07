@@ -7,6 +7,7 @@ import { CreateStreamingFile, CreateUserDir, DeleteUserDir } from "../FileOperat
 import {Worker, isMainThread, parentPort} from "worker_threads";
 import { AddUserApi, RemoveUserApi } from "../Api/DataApi";
 import { exec, fork, spawn } from "child_process";
+import { AddUserDebug, ClearLogs, DeleteUserDebug, updateProgress } from "../Libary/Logger";
 
 
 const PORT = SocketServerSettings.port;
@@ -28,11 +29,11 @@ ExpressMiddleware.get("/",(req,res)=>{
 
 SocketServer.on("connection",async (socket)=>{
 
-    console.log("A new User is Connected");
+    AddUserDebug(socket.id);
 
     socket.on(SocketServerSettings.NewVideoCommand,async (arg)=>{
 
-        console.log(arg);
+        updateProgress(socket.id, "state", "Got new Video")
 
         const QueueItem: QueueItem = {_ID: socket.id, URL: null, QUESTION: arg.value};
 
@@ -53,6 +54,7 @@ SocketServer.on("connection",async (socket)=>{
              }
 
              SocketServer.to(Message.UUID).emit(SocketServerSettings.SendTimeStampsCommand, {question: arg.value, TimeStamp: Message.DATA.DURATION})
+             updateProgress(socket.id, "state", "Send TimeStamp to User");
 
              const VideoProcess = fork(GeneralSettings.path+"/Workers/DownloadWorker.js", [JSON.stringify(VideoItem)]);
 
@@ -66,7 +68,7 @@ SocketServer.on("connection",async (socket)=>{
 
             if(Message.detail == "User is disconnected"){
                    
-                console.log("User " + Message._id + " is Disconected!");
+               DeleteUserDebug(socket.id);
 
                 return;
             }
@@ -86,6 +88,7 @@ SocketServer.on("connection",async (socket)=>{
                     const StringMessage = JSON.stringify(message);
                     const Message = JSON.parse(StringMessage);
                     SocketServer.to(Message._ID).emit(SocketServerSettings.CheckQuestCommand, {Question: Message.newQuestion, BeforeQuestion: arg.value});
+                    updateProgress(socket.id, "state", "Send Question to User")
                     return;
                 });
             };
@@ -107,7 +110,7 @@ SocketServer.on("connection",async (socket)=>{
 
         await RemoveUserApi(socket.id);
      
-        console.log("DISCONNECT");
+        DeleteUserDebug(socket.id);
      
         setTimeout(async () => {
          await DeleteUserDir(socket.id);
@@ -125,4 +128,7 @@ SocketServer.on("connection",async (socket)=>{
 server.listen(PORT,async ()=>{
 console.log("Pogramm sucessfull Started");
 console.log("Server Listen on port %d", PORT );
+
+ClearLogs();
 });
+

@@ -99,6 +99,7 @@
         var UserData = {};
         const URL = "http://localhost:4000";
         const Questions = [];
+        var hlsClient = null;
 
 
         var socket_id = null;
@@ -115,8 +116,9 @@
 
 
         Button.addEventListener("click", () => {
-
             if (document.getElementsByTagName("input")[0].value.length > 0) {
+
+                if (hlsClient) hlsClient.destroy();
 
                 UserData = {};
                 document.getElementsByClassName("Stamps")[0].innerHTML = "";
@@ -165,7 +167,7 @@
             Video_player.style.display = "block";
 
             if (Hls.isSupported()) {
-                const hlsClient = new Hls(HSL_Settings);
+                hlsClient = new Hls(HSL_Settings);
 
                 hlsClient.loadSource(Player_url);
                 hlsClient.attachMedia(Video_player);

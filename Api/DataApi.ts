@@ -7,21 +7,6 @@ const ServerHostName = DataBaseServerSettings.hostname;
 const Main_Url = ServerHostName + ":" + ServerPort + "/";
 
 
- async function DequeueOpApi(type: string) :Promise<QueueItem>{
-
-    const res = await axios.get(Main_Url + "QUEUE/" + type.toUpperCase() + "/DEQUEUE");
-    
-    return res.data.DATA;
-
-}
-
- async function EnqueueOpApi(type:string, Data: QueueItem): Promise<void> {
-
-     const data = await axios.post(Main_Url + "QUEUE/" + type.toUpperCase() + "/ENQUEUE",Data);
-
-    return;
-}
-
 
 export async function SavePromptApi(prompt: string, generatedPrompt: string) {
 
@@ -47,12 +32,6 @@ export async function GetPromptApi(prompt: string) {
 }
 
 
- async function DeleteUserFromQueueApi(_id: string) {
-    
-    const res = await axios.get(Main_Url + "QUEUE/" + _id + "/DELETE_USER");
-
-    return;
-}
 
 export async function ChangeTimeStampApi(_id:string, newTimeStamp: number) {
     const Body = {
