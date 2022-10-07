@@ -38,6 +38,9 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
           '-loglevel', '8', '-hide_banner',
           '-i', 'pipe:4',
           '-i', 'pipe:5',
+          "-c:v", "libx264",
+          "-preset", "slower",
+          "-crf","51",
           '-map', '0:a',
           '-map', '1:v',
           '-c:v', 'copy',
@@ -76,7 +79,9 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
           "-hls_time", "1",
           "-hls_list_size", "0",
           "-level" , "6.0",
-          "-crf","28",
+          "-c:v", "libx264",
+          "-preset", "slower",
+          "-crf","51",
           "-hls_segment_filename", `${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/${videoNum}/%d.ts`, //TODO: CHANGE
           `${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/buffer.m3u8` //TODO: CHANGE 
       ],{
@@ -138,6 +143,11 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
              process.send!({_id: _id, detail: "User is disconnected"});
           }
            await RemoveFile(`${GeneralSettings.path}/${GeneralSettings.VideoDirName}/${_id}/buffer.m3u8`);
+           resolve();
+        });
+    })
+  
+}oDirName}/${_id}/buffer.m3u8`);
            resolve();
         });
     })
