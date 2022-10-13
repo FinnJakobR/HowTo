@@ -109,7 +109,7 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
             
             setTimeout(() => {
               process.send!({_id: _id, detail: "First Segments are loaded"});
-            }, 1000);
+            }, GeneralSettings.delayBeforeSendFirstSegment);
 
           }
 
