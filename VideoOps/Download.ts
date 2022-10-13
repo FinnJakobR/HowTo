@@ -1,8 +1,6 @@
 import ytdl from "ytdl-core";
-import fs from "fs";
 import cp from "child_process";
 import ffmpeg from "ffmpeg-static";
-import {Worker, isMainThread, parentPort} from "worker_threads";
 import { GeneralSettings } from "../Settings/Settings";
 import { RemoveFile } from "../FileOperations/FileOP";
 import { IsUserConnectedApi } from "../Api/DataApi";
@@ -13,6 +11,8 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
     //TODO: Ordner erstellen welche Video 1 2 usw 
 
     var isFirstTsFile = true;
+    const progressbarInterval = 1000;
+
 
     await new Promise<void>((resolve, reject) => {
       const tracker = {
@@ -32,6 +32,12 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
         .on('progress', (_, downloaded, total) => {
           tracker.video = { downloaded, total };
         });
+
+        const showProgress = () => {
+          const toMB = (i:number) => (i / 1024 / 1024).toFixed(2);
+        
+          updateProgress(_id, "Download", `Audio| ${(tracker.audio.downloaded / tracker.audio.total * 100).toFixed(2)}% processed ` + `(${toMB(tracker.audio.downloaded)}MB of ${toMB(tracker.audio.total)}MB).${' '.repeat(1)}\ ` + `Video| ${(tracker.video.downloaded / tracker.video.total * 100).toFixed(2)}% processed ` + `(${toMB(tracker.video.downloaded)}MB of ${toMB(tracker.video.total)}MB).${' '.repeat(1)}`)
+        };
       
         //../${GeneralSettings.VideoDirName}/${_id}/${_id}.mp4
       
@@ -103,6 +109,8 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
       
         HLSProcess.stdio[4]?.on("data",async ()=>{
 
+          showProgress();
+
           if(isFirstTsFile){
             
             isFirstTsFile = false;
@@ -138,6 +146,7 @@ export async function DownloadAndConvertVideo(url:string, _id: string, videoNum:
           
           if(isConnected){
             updateProgress(_id, "state", "Download Ended!");
+            updateProgress(_id, "Download", "finish")
             process.send!({_id: _id, detail: "DownLoadingConverting Finish"});
           
           }else{
