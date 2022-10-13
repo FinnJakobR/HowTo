@@ -20,7 +20,8 @@ export const GeneralSettings = {
   VideoDirName: "Videos",
   HostName: "http://194.95.202.243",
   path: ".",
-  debug: true
+  debug: true,
+  delayBeforeSendFirstSegment: 3000
 }
 
 
