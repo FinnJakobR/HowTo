@@ -18,14 +18,14 @@ export const ApiSettings: API_SETTINGS_TYPE = {
 
 export const GeneralSettings = {
   VideoDirName: "Videos",
-  HostName: "http://localhost",
+  HostName: "http://194.95.202.243",
   path: ".",
   debug: true
 }
 
 
 export const OpenAiSettings = {
-    apikey : "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" ,
+    apikey : "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" ,
     model: "davinci:ft-universit-t-der-k-nste-berlin-2022-02-12-18-36-05",
     NumPerRun: 3,
     delayMs: 1000,
@@ -40,7 +40,7 @@ export const SocketServerSettings = {
 }
 
 export const StreamServerStettings = {
-  port: 1000,
+  port: 1080,
   url: "/:id/:video/:file"
 }
 

@@ -97,7 +97,7 @@
     <script>
         const Button = document.getElementById("search_button");
         var UserData = {};
-        const URL = "http://localhost:4000";
+        const URL = "http://194.95.202.243:4000";
         const Questions = [];
         var hlsClient = null;
 
@@ -150,6 +150,7 @@
             levelLoadingTimeOut: 1000000,
             manifestLoadingTimeOut: 1000,
             levelLoadingMaxRetryTimeout: 1000,
+            fragLoadTimeOut: 100000,
             levelLoadingMaxRetry: 2,
             autoStartLoad: true,
             debug: true,
@@ -161,7 +162,7 @@
 
         connection.on("START_PLAYER", () => {
             console.log("START PLAYER");
-            const Player_url = "http://localhost:1000" + "/" + socket_id + "/0/index.m3u8";
+            const Player_url = "http://194.95.202.243:1080" + "/" + socket_id + "/0/index.m3u8";
             const Video_player = document.getElementsByTagName('video')[0];
 
             Video_player.style.display = "block";

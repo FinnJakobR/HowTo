@@ -125,7 +125,7 @@ SocketServer.on("connection",async (socket)=>{
 
 
 
-server.listen(PORT,async ()=>{
+server.listen(PORT, ()=>{
 console.log("Pogramm sucessfull Started");
 console.log("Server Listen on port %d", PORT );
 
