@@ -1,5 +1,4 @@
 import fs from "fs";
-import { DeleteVideoDir } from "../FileOperations/FileOP";
 
 var Users: any[] = [];
 
@@ -36,7 +35,7 @@ function renderProgress() {
         `---------
     User: ${user["id"]}
     state: ${user["state"]}
-    DownLoadedVideos: ${user["DownLoadedVideos"]}
+    DownLoadedVideos: ${JSON.stringify(user["DownLoadedVideos"])}
     VideoLength: ${user["VideoLength"]}
     Download: ${user["Download"]}
     LastDownLoadedVideo: ${user["LastDownLoadedVideo"]}
@@ -47,11 +46,21 @@ function renderProgress() {
     }
     
     export function updateProgress(user: string, data: string, status: string) {
-    InitLogger();
-    const ind = GetIndex(user);
-    Users[ind!][data] = status
-    renderProgress()
-    }
+        InitLogger();
+        const ind = GetIndex(user);
+    
+    
+        if(data == "DownLoadedVideos"){
+            Users[ind!][data] = JSON.parse(status);
+        renderProgress()
+    
+        return;
+    
+        } 
+    
+        Users[ind!][data] = status
+        renderProgress()
+        }
     
     function GetIndex(user_id: string) {
     for (let index = 0; index < Users.length; index++) {
