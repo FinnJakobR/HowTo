@@ -1,8 +1,9 @@
 import fs from "fs";
+import { DeleteVideoDir } from "../FileOperations/FileOP";
 
 var Users: any[] = [];
 
-function InitLogger(){
+export function InitLogger(){
 
     const LogsUnparsed = fs.readFileSync("./Logs.json", "utf-8")
 
@@ -37,6 +38,7 @@ function renderProgress() {
     state: ${user["state"]}
     DownLoadedVideos: ${user["DownLoadedVideos"]}
     VideoLength: ${user["VideoLength"]}
+    Download: ${user["Download"]}
     LastDownLoadedVideo: ${user["LastDownLoadedVideo"]}
 ---------`))
 
@@ -65,7 +67,8 @@ function renderProgress() {
         "state": "idle",
         "DownLoadedVideos": "{}",
         "VideoLength": "TBD",
-        "LastDownLoadedVideo": "TBD"
+        "LastDownLoadedVideo": "TBD",
+        "Download":  "TBD",
     }
     
    Users.push(InitData);
@@ -93,22 +96,6 @@ export function ClearLogs(){
 
 
 
-process.on('uncaughtException', function(err) {
-    // handle the error safely
-    //console.log(err);
-})
-
-
-//so the program will not close instantly
-
-//do something when app is closing
-
-
-//catches ctrl+c event
-
-//process.on("SIGINT",async ()=>{
-  //  await savePromptsInFile();
-//});
 
 // catches "kill pid" (for example: nodemon restart)
 
