@@ -17,7 +17,14 @@ if(LogsUnparsed != ""){
 
 
 function WriteLogs(){
-    fs.writeFileSync("./Logs.json", JSON.stringify(Users));
+    try {
+
+       const a =  JSON.parse(JSON.stringify(Users))
+       console.log("ACCEPT")
+    } catch (error) {
+        throw Error("Could not parsed Users " + Users );
+    }
+    fs.writeFileSync("./Logs.json", JSON.stringify(Users)) ; //--> Bug
 
     return 
 }
@@ -68,6 +75,8 @@ function renderProgress() {
             return index;
         }
     }
+
+    throw Error("Not found Index!")
     }
     
     export function AddUserDebug(id: string) {
@@ -104,6 +113,7 @@ export function ClearLogs(){
 } 
 
 
+//1.Clear die Log Datei mit und füge ein Array an 
 
 
 // catches "kill pid" (for example: nodemon restart)
